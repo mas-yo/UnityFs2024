@@ -8,6 +8,8 @@
     <ItemGroup>
         <Compile Include="EntityComponent.fs" />
         <Compile Include="Components.fs" />
+        <Compile Include="Systems.fs" />
+        <Compile Include="World.fs" />
     </ItemGroup>
 
 </Project>

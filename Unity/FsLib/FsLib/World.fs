@@ -31,3 +31,17 @@ let AddHero entityId position health world =
 let SetInput entityId input world =
     let newInputs = Map.add entityId input world.Inputs
     { world with Inputs = newInputs }
+    
+let Update world =
+    let nextVelocities =
+        world.Inputs
+        |> Seq.map (fun kv -> { EntityId=kv.Key; Value=Systems.calcVelocityWithInput kv.Value }) 
+        |> List.ofSeq
+        
+    let nextPositions =
+        world.CurrentPositions
+        |> nextValueWithSameEntity2 Systems.calcPosition nextVelocities
+        |> List.ofSeq
+        
+    { world
+      with Velocities = nextVelocities; CurrentPositions = nextPositions }

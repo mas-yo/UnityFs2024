@@ -4,7 +4,7 @@ using UnityEngine;
 using FsLib;
 using Vector2 = System.Numerics.Vector2;
 
-public class FsLibInterface : MonoBehaviour
+public class FsLibInteractor : MonoBehaviour
 {
     [SerializeField]
     public GameObject heroPrefab;

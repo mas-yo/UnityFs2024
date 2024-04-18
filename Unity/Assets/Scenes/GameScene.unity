@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 874832370}
   - component: {fileID: 874832369}
   m_Layer: 0
-  m_Name: FsLibInterface
+  m_Name: FsLibInteractor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

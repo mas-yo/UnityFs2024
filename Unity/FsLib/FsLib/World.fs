@@ -4,38 +4,42 @@ open System.Numerics
 open FsLib.EntityComponent
 open FsLib.Components
 
+    
+
 [<Struct>]
 type World = {
-    Inputs: Map<EntityId, Input>
+    Inputs: Component<Input> list
     Velocities: Component<Velocity> list
     CurrentPositions: Component<Position> list }
 
 let NewWorld = {
-    Inputs = Map []
+    Inputs = []
     Velocities = []
     CurrentPositions = [] }
 
-let NewInput = {
-    Left = false
-    Right = false
-    Up = false
-    Down = false
-    Attack = false
-}
+// let NewInput = {
+//     Left = false
+//     Right = false
+//     Up = false
+//     Down = false
+//     Attack = false
+//     Input = true
+// }
 
-let AddHero entityId position health world =
-    { Inputs = Map.add entityId NewInput world.Inputs
-      Velocities = { EntityId = entityId; Value = Velocity(Vector2.Zero) } :: world.Velocities
-      CurrentPositions = { EntityId = entityId; Value = Position(position) } :: world.CurrentPositions }
+let AddHero entityId input position health world =
+    { world with
+        Inputs = { EntityId = entityId; Value = input } :: world.Inputs
+        Velocities = { EntityId = entityId; Value = Velocity(Vector2.Zero) } :: world.Velocities
+        CurrentPositions = { EntityId = entityId; Value = Position(position) } :: world.CurrentPositions }
 
-let SetInput entityId input world =
-    let newInputs = Map.add entityId input world.Inputs
-    { world with Inputs = newInputs }
+// let SetInput entityId input world =
+//     let newInputs = Map.add entityId input world.Inputs
+//     { world with Inputs = newInputs }
     
 let Update world =
     let nextVelocities =
-        world.Inputs
-        |> Seq.map (fun kv -> { EntityId=kv.Key; Value=Systems.calcVelocityWithInput kv.Value }) 
+        world.Velocities
+        |> nextValueWithSameEntity2 Systems.calcVelocityWithInput world.Inputs
         |> List.ofSeq
         
     let nextPositions =

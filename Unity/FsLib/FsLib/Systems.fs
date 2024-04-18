@@ -4,9 +4,9 @@ open System.Numerics
 open FsLib.Components
 
 
-let calcVelocityWithInput input =
-    let vx = if input.Left then -2.0f elif input.Right then 2.0f else 0.0f
-    let vy = if input.Up then -2.0f elif input.Down then 2.0f else 0.0f
+let calcVelocityWithInput _ input =
+    let vx = if input.Input.Left() then -2.0f elif input.Input.Right() then 2.0f else 0.0f
+    let vy = if input.Input.Up() then -2.0f elif input.Input.Down() then 2.0f else 0.0f
 
     Vector2(vx, vy)
     |> Velocity

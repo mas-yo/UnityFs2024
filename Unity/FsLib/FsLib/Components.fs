@@ -1,17 +1,15 @@
 ﻿module FsLib.Components
 
+open System
 open System.Drawing
 open System.Numerics
+open FsLib.Environment
 
 type Team = Team of int
 
 [<Struct>]
 type Input = {
-    Left : bool
-    Right : bool
-    Up : bool
-    Down : bool
-    Attack : bool
+    Input : IInput
 }
 
 type MoveTarget = MoveTarget of Vector2

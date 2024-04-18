@@ -17,18 +17,13 @@ let NewWorld = {
     Velocities = []
     CurrentPositions = [] }
 
-// let NewInput = {
-//     Left = false
-//     Right = false
-//     Up = false
-//     Down = false
-//     Attack = false
-//     Input = true
-// }
+let NewInput (input: Environment.IInput) = {
+    Input = input
+}
 
 let AddHero entityId input position health world =
     { world with
-        Inputs = { EntityId = entityId; Value = input } :: world.Inputs
+        Inputs = { EntityId = entityId; Value = NewInput(input) } :: world.Inputs
         Velocities = { EntityId = entityId; Value = Velocity(Vector2.Zero) } :: world.Velocities
         CurrentPositions = { EntityId = entityId; Value = Position(position) } :: world.CurrentPositions }
 

@@ -19,7 +19,7 @@ public class FsLibInterface : MonoBehaviour
 
         var entityId = EntityComponent.EntityId.NewEntityId(_nextEntityId);
         
-        _world = World.AddHero(entityId, Vector2.Zero, 10, _world);
+        _world = World.AddHero(entityId, new InputEnvironment(), Vector2.Zero, 10, _world);
         var newObject = Instantiate(heroPrefab, Vector3.zero, Quaternion.identity);
         _gameObjects.Add(EntityComponent.EntityId.NewEntityId(_nextEntityId), newObject);
 
@@ -29,9 +29,6 @@ public class FsLibInterface : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _world = World.SetInput(EntityComponent.EntityId.NewEntityId(1),
-            new Components.Input(Input.GetKeyDown(KeyCode.A), Input.GetKeyDown(KeyCode.D), Input.GetKeyDown(KeyCode.W),
-                Input.GetKeyDown(KeyCode.S), false), _world);
         _world = World.Update(_world);
 
         foreach (var pos in _world.CurrentPositions)

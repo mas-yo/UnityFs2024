@@ -19,9 +19,11 @@ public class FsLibInteractor : MonoBehaviour
 
         var entityId = EntityComponent.EntityId.NewEntityId(_nextEntityId);
         
-        _world = World.AddHero(entityId, new InputEnvironment(), Vector2.Zero, 10, _world);
         var newObject = Instantiate(heroPrefab, Vector3.zero, Quaternion.identity);
+        var animator = newObject.GetComponent<Animator>();
         _gameObjects.Add(EntityComponent.EntityId.NewEntityId(_nextEntityId), newObject);
+
+        _world = World.AddHero(entityId, new InputEnvironment(), new AttackAnimationEnvironment(animator), Vector2.Zero, 10, _world);
 
         _nextEntityId++;
     }

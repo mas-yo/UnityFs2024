@@ -1,6 +1,6 @@
 ﻿module FsLib.Environment
 
-type IAnimation =
+type IAttackAnimation =
     abstract member Play: unit -> unit
     abstract member IsPlaying: unit -> bool
 

@@ -12,6 +12,11 @@ type Input = {
     Input : IInput
 }
 
+[<Struct>]
+type AttackAnimation = {
+    Animation : IAttackAnimation
+}
+
 type MoveTarget = MoveTarget of Vector2
 
 type Velocity = Velocity of Vector2

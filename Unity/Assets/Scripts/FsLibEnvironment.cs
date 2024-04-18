@@ -26,3 +26,22 @@ public class InputEnvironment : Environment.IInput
         return UnityEngine.Input.GetKey(KeyCode.Space);
     }
 }
+
+public class AttackAnimationEnvironment : Environment.IAttackAnimation
+{
+    private readonly Animator _animator;
+    public AttackAnimationEnvironment(Animator animator)
+    {
+        _animator = animator;
+    }
+    public void Play()
+    {
+        _animator.Play("HeroAttack");
+    }
+
+    public bool IsPlaying()
+    {
+        return false;
+        return _animator.GetCurrentAnimatorStateInfo(0).IsName("HeroAttack");
+    }
+}

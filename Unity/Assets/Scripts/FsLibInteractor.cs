@@ -11,6 +11,7 @@ public class FsLibInteractor : MonoBehaviour
 
     private int _nextEntityId = 1;
     private Dictionary<EntityComponent.EntityId, GameObject> _gameObjects = new Dictionary<EntityComponent.EntityId, GameObject>();
+    private Dictionary<EntityComponent.EntityId, Animator> _animators = new Dictionary<EntityComponent.EntityId, Animator>();
     private World.World _world;
     // Start is called before the first frame update
     void Start()
@@ -22,6 +23,7 @@ public class FsLibInteractor : MonoBehaviour
         var newObject = Instantiate(heroPrefab, Vector3.zero, Quaternion.identity);
         var animator = newObject.GetComponent<Animator>();
         _gameObjects.Add(EntityComponent.EntityId.NewEntityId(_nextEntityId), newObject);
+        _animators.Add(EntityComponent.EntityId.NewEntityId(_nextEntityId), animator);
 
         _world = World.AddHero(entityId, new InputEnvironment(), new AttackAnimationEnvironment(animator), Vector2.Zero, 10, _world);
 
@@ -33,21 +35,30 @@ public class FsLibInteractor : MonoBehaviour
     {
         _world = World.Update(_world);
 
-        foreach (var rot in _world.Directions)
+        foreach (var component in _world.Directions)
         {
-            var obj = _gameObjects[rot.EntityId];
-            obj.transform.rotation = Quaternion.Euler(0f, rot.Value.Item, 0f);
+            var obj = _gameObjects[component.EntityId];
+            obj.transform.rotation = Quaternion.Euler(0f, component.Value.Item, 0f);
         }
 
-        foreach (var pos in _world.CurrentPositions)
+        foreach (var component in _world.CurrentPositions)
         {
-            var obj = _gameObjects[pos.EntityId];
+            var obj = _gameObjects[component.EntityId];
             obj.transform.position = new Vector3()
             {
-                x = pos.Value.Item.X,
+                x = component.Value.Item.X,
                 y = obj.transform.position.y,
-                z = pos.Value.Item.Y,
+                z = component.Value.Item.Y,
             };
+        }
+
+        foreach (var component in _world.AttackAnimations)
+        {
+            var animator = _animators[component.EntityId];
+            if (component.Value.IsPlaying && !animator.GetCurrentAnimatorStateInfo(0).IsName("HeroAttack"))
+            {
+                animator.Play("HeroAttack");
+            }
         }
         
         

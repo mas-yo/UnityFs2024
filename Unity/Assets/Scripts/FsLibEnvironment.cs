@@ -34,14 +34,13 @@ public class AttackAnimationEnvironment : Environment.IAttackAnimation
     {
         _animator = animator;
     }
-    public void Play()
-    {
-        _animator.Play("HeroAttack");
-    }
+    // public void Play()
+    // {
+    //     _animator.Play("HeroAttack");
+    // }
 
     public bool IsPlaying()
     {
-        return false;
         return _animator.GetCurrentAnimatorStateInfo(0).IsName("HeroAttack");
     }
 }

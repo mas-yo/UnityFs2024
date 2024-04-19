@@ -14,6 +14,7 @@ type Input = {
 
 [<Struct>]
 type AttackAnimation = {
+    IsPlaying : bool
     Animation : IAttackAnimation
 }
 

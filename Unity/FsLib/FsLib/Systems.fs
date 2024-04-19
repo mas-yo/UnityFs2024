@@ -6,11 +6,15 @@ open FsLib.Components
 
 
 let calcAttackAnimation attackAnimation input =
-    if
-        input.Input.Attack() && attackAnimation.Animation.IsPlaying() = false
-    then
-        attackAnimation.Animation.Play()
-    attackAnimation
+    let nextIsPlaying =
+        match input.Input.Attack(), attackAnimation.Animation.IsPlaying() with
+        | true, true -> true
+        | true, false -> true
+        | false, true -> true
+        | false, false -> false
+    
+    { attackAnimation with
+        IsPlaying = nextIsPlaying }
     
 let calcDirectionWithInput (Direction direction) input =
     match input.Input.Left(), input.Input.Right(), input.Input.Up(), input.Input.Down() with

@@ -26,6 +26,7 @@ let NewInput (input: Environment.IInput) = {
 }
 
 let NewAttackAnimation (animation: Environment.IAttackAnimation) = {
+    IsPlaying = false
     Animation = animation
 }
 
@@ -37,10 +38,6 @@ let AddHero entityId input attackAnimation position health world =
         Velocities = { EntityId = entityId; Value = Velocity(Vector2.Zero) } :: world.Velocities
         CurrentPositions = { EntityId = entityId; Value = Position(position) } :: world.CurrentPositions }
 
-// let SetInput entityId input world =
-//     let newInputs = Map.add entityId input world.Inputs
-//     { world with Inputs = newInputs }
-    
 let Update world =
     
     let nextAttackAnimations =

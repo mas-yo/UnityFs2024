@@ -33,6 +33,12 @@ public class FsLibInteractor : MonoBehaviour
     {
         _world = World.Update(_world);
 
+        foreach (var rot in _world.Directions)
+        {
+            var obj = _gameObjects[rot.EntityId];
+            obj.transform.rotation = Quaternion.Euler(0f, rot.Value.Item, 0f);
+        }
+
         foreach (var pos in _world.CurrentPositions)
         {
             var obj = _gameObjects[pos.EntityId];

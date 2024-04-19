@@ -10,12 +10,14 @@ open FsLib.Components
 type World = {
     Inputs: Component<Input> list
     AttackAnimations: Component<AttackAnimation> list
+    Directions: Component<Direction> list
     Velocities: Component<Velocity> list
     CurrentPositions: Component<Position> list }
 
 let NewWorld = {
     Inputs = []
-    AttackAnimations = [] 
+    AttackAnimations = []
+    Directions = [] 
     Velocities = []
     CurrentPositions = [] }
 
@@ -30,7 +32,8 @@ let NewAttackAnimation (animation: Environment.IAttackAnimation) = {
 let AddHero entityId input attackAnimation position health world =
     { world with
         Inputs = { EntityId = entityId; Value = NewInput input } :: world.Inputs
-        AttackAnimations = { EntityId = entityId; Value = NewAttackAnimation attackAnimation } :: world.AttackAnimations 
+        AttackAnimations = { EntityId = entityId; Value = NewAttackAnimation attackAnimation } :: world.AttackAnimations
+        Directions = { EntityId = entityId; Value = Direction(0f) } :: world.Directions 
         Velocities = { EntityId = entityId; Value = Velocity(Vector2.Zero) } :: world.Velocities
         CurrentPositions = { EntityId = entityId; Value = Position(position) } :: world.CurrentPositions }
 
@@ -45,6 +48,11 @@ let Update world =
         |> nextValueWithSameEntity2 Systems.calcAttackAnimation world.Inputs
         |> List.ofSeq
         
+    let nextDirections =
+        world.Directions
+        |> nextValueWithSameEntity2 Systems.calcDirectionWithInput world.Inputs
+        |> List.ofSeq
+        
     let nextVelocities =
         world.Velocities
         |> nextValueWithSameEntity2 Systems.calcVelocityWithInput world.Inputs
@@ -57,5 +65,6 @@ let Update world =
         
     { world with
         AttackAnimations = nextAttackAnimations
+        Directions = nextDirections 
         Velocities = nextVelocities
         CurrentPositions = nextPositions }

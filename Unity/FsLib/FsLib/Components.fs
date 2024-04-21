@@ -18,7 +18,7 @@ type AttackAnimation = {
     Animation : IAttackAnimation
 }
 
-type MoveTarget = MoveTarget of Vector2
+type MoveTarget = MoveTarget of Vector2 option
 
 type Velocity = Velocity of Vector2
 

@@ -5,6 +5,10 @@ open System.Numerics
 open FsLib.Components
 
 
+let calcMoveTarget (otherPositions: Position seq) _ (Position currentPosition) =
+    otherPositions
+    |> Seq.minBy (fun (Position x) -> (currentPosition - x).LengthSquared())
+    
 let calcAttackAnimation attackAnimation input =
     let nextIsPlaying =
         match input.Input.Attack(), attackAnimation.Animation.IsPlaying() with
@@ -30,13 +34,25 @@ let calcDirectionWithInput (Direction direction) input =
     
     |> Direction
         
-        
+let calcDirectionWithMoveTarget (Direction direction) (Position currentPosition) (MoveTarget moveTarget) =
+    match moveTarget with
+    | Some(target) ->
+        let diff = target - currentPosition
+        (atan2 diff.Y diff.X) * 180.0f / float32 Math.PI
+    | _ -> direction
+    |> Direction
 
 let calcVelocityWithInput _ input =
     let vx = if input.Input.Left() then -0.1f elif input.Input.Right() then 0.1f else 0.0f
     let vy = if input.Input.Up() then 0.1f elif input.Input.Down() then -0.1f else 0.0f
 
     Vector2(vx, vy)
+    |> Velocity
+    
+let calcVelocityWithMoveTarget _ (Position currentPosition) (MoveTarget moveTarget) =
+    match moveTarget with
+    | Some(target) -> Vector2.Multiply(Vector2.Normalize(Vector2(target.X - currentPosition.X, target.Y - currentPosition.Y)), 0.05f)
+    | _ -> Vector2.Zero
     |> Velocity
     
 let calcPosition (Position current) (Velocity velocity) =

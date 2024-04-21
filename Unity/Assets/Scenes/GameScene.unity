@@ -247,6 +247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heroPrefab: {fileID: 7926537122629545044, guid: c3e5d514933b06a47b8af3ccb2e99408, type: 3}
+  enemyPrefab: {fileID: 2472104122451437666, guid: 47961e139ce4f5247b2db6a9c2944d17, type: 3}
 --- !u!4 &874832370
 Transform:
   m_ObjectHideFlags: 0

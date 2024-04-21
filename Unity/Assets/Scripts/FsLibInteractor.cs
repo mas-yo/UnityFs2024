@@ -9,6 +9,9 @@ public class FsLibInteractor : MonoBehaviour
     [SerializeField]
     public GameObject heroPrefab;
 
+    [SerializeField] 
+    public GameObject enemyPrefab;
+
     private int _nextEntityId = 1;
     private readonly Dictionary<EntityComponent.EntityId, GameObject> _gameObjects = new Dictionary<EntityComponent.EntityId, GameObject>();
     private readonly Dictionary<EntityComponent.EntityId, Animator> _animators = new Dictionary<EntityComponent.EntityId, Animator>();
@@ -18,15 +21,25 @@ public class FsLibInteractor : MonoBehaviour
     {
         _world = World.NewWorld;
 
-        var entityId = EntityComponent.EntityId.NewEntityId(_nextEntityId);
-        
-        var newObject = Instantiate(heroPrefab, Vector3.zero, Quaternion.identity);
-        var animator = newObject.GetComponent<Animator>();
-        _gameObjects.Add(EntityComponent.EntityId.NewEntityId(_nextEntityId), newObject);
-        _animators.Add(EntityComponent.EntityId.NewEntityId(_nextEntityId), animator);
+        {
+            var entityId = EntityComponent.EntityId.NewEntityId(_nextEntityId);
 
-        _world = World.AddHero(entityId, new InputEnvironment(), new AttackAnimationEnvironment(animator), Vector2.Zero, 10, _world);
+            var newObject = Instantiate(heroPrefab, Vector3.zero, Quaternion.identity);
+            var animator = newObject.GetComponent<Animator>();
+            _gameObjects.Add(entityId, newObject);
+            _animators.Add(entityId, animator);
 
+            _world = World.AddHero(entityId, new InputEnvironment(), new AttackAnimationEnvironment(animator), Vector2.Zero, _world);
+        }
+        _nextEntityId++;
+        {
+            var entityId = EntityComponent.EntityId.NewEntityId(_nextEntityId);
+
+            var newObject = Instantiate(enemyPrefab, new Vector3(0f, 0f, 10f), Quaternion.identity);
+            _gameObjects.Add(entityId, newObject);
+
+            _world = World.AddEnemy(entityId, new Vector2(0f, 10f), _world);
+        }
         _nextEntityId++;
     }
 

@@ -6,41 +6,45 @@ type EntityId = EntityId of int
 [<Struct>]
 type Component<'T> = { EntityId: EntityId; Value: 'T }
 
+let othersSelector (t2:Component<'T2> seq) (t1:Component<'T1>) =
+    t2 |> Seq.filter (fun x -> x.EntityId <> t1.EntityId)
+        |> Seq.map (fun x -> x.Value)
+
 let sameEntitySelector (t2:Component<'T2> seq) (t1:Component<'T1>) =
-    t2 |> Seq.find(fun x -> x.EntityId = t1.EntityId)
+    t2 |> Seq.tryFind (fun x -> x.EntityId = t1.EntityId)
     
 let withEntitySelector2<'T1, 'T2>
-    (selector2: Component<'T1> -> Component<'T2>)
+    (selector2: Component<'T1> -> Component<'T2> option)
     (components1: Component<'T1> seq)
     =
     components1
-    |> Seq.map (fun c1 ->
-        let c2 = selector2 c1
-        c1.EntityId, c1.Value, c2.Value)
+    |> Seq.choose (fun c1 ->
+        match selector2 c1 with
+        | Some(c2) -> Some(c1.EntityId, c1.Value, c2.Value)
+        | _ -> None)
     
 let withEntitySelector3<'T1, 'T2, 'T3>
-    (selector2: Component<'T1> -> Component<'T2>)
-    (selector3: Component<'T1> -> Component<'T3>)
+    (selector2: Component<'T1> -> Component<'T2> option)
+    (selector3: Component<'T1> -> Component<'T3> option)
     (components1: Component<'T1> seq)
     =
     components1
-    |> Seq.map (fun c1 ->
-        let c2 = selector2 c1
-        let c3 = selector3 c1
-        c1.EntityId, c1.Value, c2.Value, c3.Value)
+    |> Seq.choose (fun c1 ->
+        match selector2 c1, selector3 c1 with
+        | Some(c2), Some(c3) -> Some(c1.EntityId, c1.Value, c2.Value, c3.Value)
+        | _ -> None)
 
 let withEntitySelector4<'T1, 'T2, 'T3, 'T4>
-    (selector2: Component<'T1> -> Component<'T2>)
-    (selector3: Component<'T1> -> Component<'T3>)
-    (selector4: Component<'T1> -> Component<'T4>)
+    (selector2: Component<'T1> -> Component<'T2> option)
+    (selector3: Component<'T1> -> Component<'T3> option)
+    (selector4: Component<'T1> -> Component<'T4> option)
     (components1: Component<'T1> seq)
     =
     components1
-    |> Seq.map (fun c1 ->
-        let c2 = selector2 c1
-        let c3 = selector3 c1
-        let c4 = selector4 c1
-        c1.EntityId, c1.Value, c2.Value, c3.Value, c4.Value)
+    |> Seq.choose (fun c1 ->
+        match selector2 c1, selector3 c1, selector4 c1 with
+        | Some(c2), Some(c3), Some(c4) -> Some(c1.EntityId, c1.Value, c2.Value, c3.Value, c4.Value)
+        | _ -> None)
     
 let withSameEntity2<'T1, 'T2>
 
@@ -67,8 +71,8 @@ let withSameEntity4<'T1, 'T2, 'T3, 'T4>
     components1
     |> withEntitySelector4 (sameEntitySelector components2) (sameEntitySelector components3) (sameEntitySelector components4)
 
-let findByEntityId (c: Component<_>) (components: Component<_> seq) =
-    components |> Seq.find (fun x -> x.EntityId = c.EntityId)
+// let findByEntityId (c: Component<_>) (components: Component<_> seq) =
+//     components |> Seq.find (fun x -> x.EntityId = c.EntityId)
 
 let nextValueWithSameEntity2<'T1, 'T2>
     (calcNext: 'T1 -> 'T2 -> 'T1)

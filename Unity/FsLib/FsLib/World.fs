@@ -8,14 +8,18 @@ open FsLib.Components
 
 [<Struct>]
 type World = {
+    Teams: Component<Team> array
     Inputs: Component<Input> array
+    MoveTargets: Component<MoveTarget> array
     AttackAnimations: Component<AttackAnimation> array
     Directions: Component<Direction> array
     Velocities: Component<Velocity> array
     CurrentPositions: Component<Position> array }
 
 let NewWorld = {
+    Teams = [||]
     Inputs = [||]
+    MoveTargets = [||] 
     AttackAnimations = [||]
     Directions = [||] 
     Velocities = [||]
@@ -30,8 +34,10 @@ let NewAttackAnimation (animation: Environment.IAttackAnimation) = {
     Animation = animation
 }
 
-let AddHero entityId input attackAnimation position health world =
+let AddHero entityId input attackAnimation position world =
     { world with
+        Teams =
+            world.Teams |> Array.append [| { EntityId = entityId; Value = Team(0) } |]
         Inputs =
             world.Inputs |> Array.append [| { EntityId = entityId; Value = NewInput input } |]
         AttackAnimations =
@@ -43,22 +49,66 @@ let AddHero entityId input attackAnimation position health world =
         CurrentPositions =
             world.CurrentPositions |> Array.append [| { EntityId = entityId; Value = Position(position) } |]
             }
+    
+let AddEnemy entityId position world =
+    { world with
+        Teams =
+            world.Teams |> Array.append [| { EntityId = entityId; Value = Team(1) } |]
+        MoveTargets =
+            world.MoveTargets |> Array.append [| { EntityId = entityId; Value = MoveTarget(None) } |]
+        Directions =
+            world.Directions |> Array.append [| { EntityId = entityId; Value = Direction(0f) } |]
+        Velocities =
+            world.Velocities |> Array.append [| { EntityId = entityId; Value = Velocity(Vector2.Zero) } |]
+        CurrentPositions =
+            world.CurrentPositions |> Array.append [| { EntityId = entityId; Value = Position(position) } |]
+            }
 
 let Update world =
+    
+    
+    
+    let nextMoveTargets =
+        world.MoveTargets
+        |> Seq.choose (fun x ->
+            match x |> sameEntitySelector world.CurrentPositions with
+            | Some(thisPosition) ->
+                let otherPositions = x |> othersSelector world.CurrentPositions
+                let (Position target) = Systems.calcMoveTarget otherPositions x thisPosition.Value
+                let moveTarget = target |> Some |> MoveTarget
+                Some({ EntityId = x.EntityId; Value = moveTarget })
+            | _ -> None)
+        |> Array.ofSeq
     
     let nextAttackAnimations =
         world.AttackAnimations
         |> nextValueWithSameEntity2 Systems.calcAttackAnimation world.Inputs
         |> Array.ofSeq
         
-    let nextDirections =
+    let nextDirectionsWithInput =
         world.Directions
         |> nextValueWithSameEntity2 Systems.calcDirectionWithInput world.Inputs
-        |> Array.ofSeq
         
-    let nextVelocities =
+    let nextDirectionsWithMoveTarget =
+        world.Directions
+        |> nextValueWithSameEntity3 Systems.calcDirectionWithMoveTarget world.CurrentPositions world.MoveTargets
+        
+    let nextDirections =
+        nextDirectionsWithInput
+        |> Seq.append nextDirectionsWithMoveTarget
+        |> Array.ofSeq
+
+    let nextVelocitiesWithInput =
         world.Velocities
         |> nextValueWithSameEntity2 Systems.calcVelocityWithInput world.Inputs
+        
+    let nextVelocitiesWithMoveTarget =
+        world.Velocities
+        |> nextValueWithSameEntity3 Systems.calcVelocityWithMoveTarget world.CurrentPositions world.MoveTargets
+        
+    let nextVelocities =
+        nextVelocitiesWithInput
+        |> Seq.append nextVelocitiesWithMoveTarget
         |> Array.ofSeq
         
     let nextPositions =
@@ -67,6 +117,7 @@ let Update world =
         |> Array.ofSeq
         
     { world with
+        MoveTargets = nextMoveTargets
         AttackAnimations = nextAttackAnimations
         Directions = nextDirections 
         Velocities = nextVelocities

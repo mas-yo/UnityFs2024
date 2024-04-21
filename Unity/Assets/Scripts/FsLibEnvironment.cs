@@ -7,23 +7,23 @@ public class InputEnvironment : Environment.IInput
 {
     public bool Up()
     {
-        return UnityEngine.Input.GetKey(KeyCode.W);
+        return Input.GetKey(KeyCode.W);
     }
     public bool Down()
     {
-        return UnityEngine.Input.GetKey(KeyCode.S);
+        return Input.GetKey(KeyCode.S);
     }
     public bool Left()
     {
-        return UnityEngine.Input.GetKey(KeyCode.A);
+        return Input.GetKey(KeyCode.A);
     }
     public bool Right()
     {
-        return UnityEngine.Input.GetKey(KeyCode.D);
+        return Input.GetKey(KeyCode.D);
     }
     public bool Attack()
     {
-        return UnityEngine.Input.GetKey(KeyCode.Space);
+        return Input.GetKey(KeyCode.Space);
     }
 }
 
@@ -34,10 +34,6 @@ public class AttackAnimationEnvironment : Environment.IAttackAnimation
     {
         _animator = animator;
     }
-    // public void Play()
-    // {
-    //     _animator.Play("HeroAttack");
-    // }
 
     public bool IsPlaying()
     {

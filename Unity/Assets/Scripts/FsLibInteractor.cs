@@ -10,10 +10,10 @@ public class FsLibInteractor : MonoBehaviour
     public GameObject heroPrefab;
 
     private int _nextEntityId = 1;
-    private Dictionary<EntityComponent.EntityId, GameObject> _gameObjects = new Dictionary<EntityComponent.EntityId, GameObject>();
-    private Dictionary<EntityComponent.EntityId, Animator> _animators = new Dictionary<EntityComponent.EntityId, Animator>();
+    private readonly Dictionary<EntityComponent.EntityId, GameObject> _gameObjects = new Dictionary<EntityComponent.EntityId, GameObject>();
+    private readonly Dictionary<EntityComponent.EntityId, Animator> _animators = new Dictionary<EntityComponent.EntityId, Animator>();
     private World.World _world;
-    // Start is called before the first frame update
+
     void Start()
     {
         _world = World.NewWorld;
@@ -30,7 +30,6 @@ public class FsLibInteractor : MonoBehaviour
         _nextEntityId++;
     }
 
-    // Update is called once per frame
     void Update()
     {
         _world = World.Update(_world);

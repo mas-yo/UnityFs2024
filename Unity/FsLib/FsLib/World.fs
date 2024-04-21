@@ -70,14 +70,13 @@ let Update world =
     
     let nextMoveTargets =
         world.MoveTargets
-        |> Seq.choose (fun x ->
+        |> Seq.map (fun x ->
             match x |> sameEntitySelector world.CurrentPositions with
             | Some(thisPosition) ->
                 let otherPositions = x |> othersSelector world.CurrentPositions
-                let (Position target) = Systems.calcMoveTarget otherPositions x thisPosition.Value
-                let moveTarget = target |> Some |> MoveTarget
-                Some({ EntityId = x.EntityId; Value = moveTarget })
-            | _ -> None)
+                let target = Systems.calcMoveTarget otherPositions x thisPosition.Value
+                { EntityId = x.EntityId; Value = MoveTarget(target) }
+            | _ -> {EntityId = x.EntityId; Value = MoveTarget(None)})
         |> Array.ofSeq
     
     let nextAttackAnimations =

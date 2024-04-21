@@ -6,8 +6,13 @@ open FsLib.Components
 
 
 let calcMoveTarget (otherPositions: Position seq) _ (Position currentPosition) =
-    otherPositions
-    |> Seq.minBy (fun (Position x) -> (currentPosition - x).LengthSquared())
+    let nearestPos, len = otherPositions
+                        |> Seq.map (fun (Position x) -> x, (currentPosition - x).LengthSquared())
+                        |> Seq.minBy (fun (_, len) -> len)
+        
+    match (nearestPos, len) with
+    | nearest, len when len < 100.0f -> Some(nearest)
+    | _ -> None
     
 let calcAttackAnimation attackAnimation input =
     let nextIsPlaying =

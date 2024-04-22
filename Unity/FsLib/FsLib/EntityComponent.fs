@@ -6,10 +6,14 @@ type EntityId = EntityId of int
 [<Struct>]
 type Component<'T> = { EntityId: EntityId; Value: 'T }
 
-let othersSelector (t2:Component<'T2> seq) (t1:Component<'T1>) =
-    t2 |> Seq.filter (fun x -> x.EntityId <> t1.EntityId)
-        |> Seq.map (fun x -> x.Value)
 
+let entitiesSelector
+    (pred: Component<'T1> -> Component<'T2> -> bool)
+    (t2:Component<'T2> seq)
+    (t1:Component<'T1>)
+    =
+    t2 |> Seq.filter (pred t1)
+    
 let sameEntitySelector (t2:Component<'T2> seq) (t1:Component<'T1>) =
     t2 |> Seq.tryFind (fun x -> x.EntityId = t1.EntityId)
     

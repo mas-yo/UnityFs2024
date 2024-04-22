@@ -66,17 +66,15 @@ let AddEnemy entityId position world =
 
 let Update world =
     
-    
-    
     let nextMoveTargets =
         world.MoveTargets
-        |> Seq.map (fun x ->
-            match x |> sameEntitySelector world.CurrentPositions with
-            | Some(thisPosition) ->
-                let otherPositions = x |> othersSelector world.CurrentPositions
-                let target = Systems.calcMoveTarget otherPositions x thisPosition.Value
-                { EntityId = x.EntityId; Value = MoveTarget(target) }
-            | _ -> {EntityId = x.EntityId; Value = MoveTarget(None)})
+        |> withSameEntity3 world.Teams world.CurrentPositions
+        
+        |> Seq.map (fun (entityId, moveTarget, thisTeam, thisPosition) ->
+            let otherEntityIds = world.Teams |> Seq.choose (fun x -> if x.Value <> thisTeam then Some(x.EntityId) else None) |> Seq.toArray
+            let otherPositions = world.CurrentPositions |> Seq.choose (fun x -> if (otherEntityIds |> Seq.contains x.EntityId) then Some(x.Value) else None)
+            let target = Systems.calcMoveTarget otherPositions moveTarget thisPosition
+            { EntityId = entityId; Value = MoveTarget(target) })
         |> Array.ofSeq
     
     let nextAttackAnimations =
